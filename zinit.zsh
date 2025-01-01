@@ -1454,7 +1454,23 @@ builtin setopt noaliases
             return $(( 10 - $? ))
     done
 
-    (( ${+ICE[atinit]} )) && { local ___oldcd="$PWD"; (( ${+ICE[nocd]} == 0 )) && { () { setopt localoptions noautopushd; builtin cd -q "$local_dir/$dirname"; } && eval "${ICE[atinit]}"; ((1)); } || eval "${ICE[atinit]}"; () { setopt localoptions noautopushd; builtin cd -q "$___oldcd"; }; }
+    (( ${+ICE[atinit]} )) && { 
+      local ___oldcd="$PWD"; 
+      (( ${+ICE[nocd]} == 0 )) && 
+      {
+        () {
+          setopt localoptions noautopushd
+          builtin cd -q "$local_dir/$dirname"
+        } && eval "${ICE[atinit]}"
+          ((1))
+      } ||
+      eval "${ICE[atinit]}"
+      
+      () {
+        setopt localoptions noautopushd
+        builtin cd -q "$___oldcd"
+      }
+    }
 
     reply=( ${(on)ZINIT_EXTS[(I)z-annex hook:atinit-<-> <->]} )
     for key in "${reply[@]}"; do
@@ -1687,7 +1703,24 @@ builtin setopt noaliases
             return $(( 10 - $? ))
     done
 
-    [[ ${+ICE[atinit]} = 1 && $ICE[atinit] != '!'*   ]] && { local ___oldcd="$PWD"; (( ${+ICE[nocd]} == 0 )) && { () { setopt localoptions noautopushd; builtin cd -q "${${${(M)___user:#%}:+$___plugin}:-${ZINIT[PLUGINS_DIR]}/${___id_as//\//---}}"; } && eval "${ICE[atinit]}"; ((1)); } || eval "${ICE[atinit]}"; () { setopt localoptions noautopushd; builtin cd -q "$___oldcd"; }; }
+    [[ ${+ICE[atinit]} = 1 && $ICE[atinit] != '!'*   ]] &&
+    {
+      local ___oldcd="$PWD"
+      (( ${+ICE[nocd]} == 0 )) &&
+      {
+        () {
+          setopt localoptions noautopushd
+          builtin cd -q "${${${(M)___user:#%}:+$___plugin}:-${ZINIT[PLUGINS_DIR]}/${___id_as//\//---}}"
+        } && 
+        eval "${ICE[atinit]}"
+        ((1))
+      } ||
+      eval "${ICE[atinit]}"
+
+      () {
+        setopt localoptions noautopushd; builtin cd -q "$___oldcd"; 
+      }
+    }
 
     reply=( ${(on)ZINIT_EXTS[(I)z-annex hook:atinit-<-> <->]} )
     for ___key in "${reply[@]}"; do
