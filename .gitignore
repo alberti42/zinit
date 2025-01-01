@@ -22,3 +22,4 @@ zmodules/
 tests/_output/
 tests/_support/tmp*
 .idea
+**/*.sublime-workspace
